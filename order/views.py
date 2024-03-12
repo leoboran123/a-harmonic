@@ -74,5 +74,5 @@ def moreQuantityCart(request, id):
     url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
     return HttpResponseRedirect(url)
 
-# EN SON KUPON EKLENDİ...
+
 
