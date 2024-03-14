@@ -1,0 +1,18 @@
+{% extends "homebase.html" %}
+{% load static %}
+
+{% block title %}About Us{% endblock title%}
+{% block keywords %}keywords{% endblock keywords%}
+{% block description %}Burası anasayfa...{% endblock description%}
+
+{% block body %}
+<style>
+    body{
+        margin-top: 150px;
+    }
+</style>
+
+<h1>Your order code: {{ ordercode }}</h1>
+
+{% endblock body %}
+

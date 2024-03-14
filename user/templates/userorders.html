@@ -1,0 +1,40 @@
+{% extends "homebase.html" %}
+{% load static %}
+
+{% block title %}Ürünler{% endblock title%}
+{% block keywords %}keywords{% endblock keywords%}
+{% block description %}Burası ürünler sayfası...{% endblock description%}
+
+
+{% block body %}
+<style>
+    body{
+        margin-top: 150px;
+    }
+</style>
+
+
+ <div class="container-fluid fruite py-5">
+    <div class="container py-5">
+            <h1 class="mb-4">My Profile</h1>
+            <div class="row g-4">
+            
+                <div class="col-lg-4">    
+                    {% include "_useraccountnavbar.html" %}
+                    
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="row g-4">
+                        <div class="col-lg-12">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+    </div>
+</div>
+<!-- Fruits Shop End-->
+{% endblock body %}

@@ -82,23 +82,32 @@ def userCart(request):
     url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
     totalPrice=0
     dsc = 0
+    subtotal=0
     current_user = request.user
 
-    user_coupon = UserCoupon.objects.filter(user_id = current_user.id)
+    try:
+        user_coupon = UserCoupon.objects.filter(user_id = current_user.id)
+    except:
+        messages.warning(request, "Coupon is not valid...")
+        return HttpResponseRedirect(url)
+
     cart = ShopCart.objects.filter(user_id = current_user.id)
 
     # Resets UserCoupon.used section
     for coupons in user_coupon:
         coupons.used = False
-    coupons.save()
+        coupons.save()
 
     for product in cart:
         totalPrice = totalPrice + product.amount
+        subtotal = subtotal + product.amount
 
     context = {
         "cart" : cart,
         "totalPrice" : totalPrice,
         "discount" : dsc,
+        "subtotal" : subtotal
+
     }
 
 
@@ -107,8 +116,14 @@ def userCart(request):
         coupon_check = Coupon.objects.get(code = user_coupon_code)
 
         if coupon_check:
-            user_coupon_check = UserCoupon.objects.get(coupon_id = coupon_check.id, user_id=current_user.id)
+            try:
+                user_coupon_check = UserCoupon.objects.get(coupon_id = coupon_check.id, user_id=current_user.id)
+            except:
+                messages.warning(request, "Coupon is not valid...")
+                return HttpResponseRedirect(url)
+            
             dsc = user_coupon_check.coupon.discount
+            
             if dsc < 1:
                 totalPrice = totalPrice - (totalPrice * dsc)
             else:
@@ -121,7 +136,8 @@ def userCart(request):
                 "cart" : cart,
                 "totalPrice" : totalPrice,
                 "discount" : dsc,
-                "coupon" : coupon_check
+                "coupon" : coupon_check,
+                "subtotal" : subtotal
             }
             
             messages.warning(request, "Coupon is successfully added..")
@@ -215,3 +231,9 @@ def changeUserPassword(request):
         return render(request, "userpasswordupdate.html", context)
 
 
+def userOrders(request):
+    current_user = request.user
+
+
+
+    return render(request, "userorders.html")
