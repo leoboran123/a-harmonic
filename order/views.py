@@ -2,7 +2,8 @@ from django.shortcuts import render,HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from .models import ShopCart
+from .models import ShopCart, UserCoupon
+from user.forms import UserProfile, User
 
 
 @login_required(login_url='/login')  # Check login
@@ -75,4 +76,44 @@ def moreQuantityCart(request, id):
     return HttpResponseRedirect(url)
 
 
+@login_required(login_url='/login')  # Check login
+def checkout(request):
+    current_user = request.user
+    totalPrice = 0
+
+    user_form = UserProfile(instance=current_user)
+    user_cart = ShopCart.objects.filter(user_id=current_user.id)
+    
+    for prices in user_cart:
+        totalPrice = totalPrice + prices.amount
+
+    
+    try:
+        user_coupons = UserCoupon.objects.get(user_id=current_user.id, used=True)
+
+        if user_coupons.coupon.discount < 1:
+            totalPrice = totalPrice - (totalPrice * user_coupons.coupon.discount)
+        else:
+            totalPrice = totalPrice - user_coupons.coupon.discount
+
+        context = {
+            "cart":user_cart,
+            "totalPrice":totalPrice,
+            "user_coupon":user_coupons,
+            "user_form":user_form
+
+        }
+
+    except:
+        context = {
+            "cart":user_cart,
+            "totalPrice":totalPrice,
+            "user_form":user_form
+
+
+        }
+
+
+    return render(request, "checkout.html", context)
+    
 

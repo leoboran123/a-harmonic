@@ -12,6 +12,12 @@ urlpatterns = [
 
     
     path('myaccount/', views.userAccount, name="userAccount"),
+    path('myprofile/', views.userProfileUpdate, name="userProfile"),
+    path('userupdate/', views.userUpdate, name="updateUser"),
+    path('changepassword/', views.changeUserPassword, name="changePassword"),
+
+
+
     path('mycart/', views.userCart, name="userCart"),
 
 

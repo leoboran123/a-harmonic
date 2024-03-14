@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 from order.models import ShopCart
 from product.models import Product
+from order.models import Coupon, UserCoupon
+from .forms import UserProfileForm, UserUpdateForm
+from .models import UserProfile
 
 # Create your views here.
 
@@ -21,7 +24,7 @@ def userLogin(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Başarıyla giriş yapıldı! {user.username}")
-                return HttpResponseRedirect('/user/login')
+                return HttpResponseRedirect('/user/myaccount')
             else:
                 messages.warning(request, "Tekrar oturum açmayı deneyin")
                 return HttpResponseRedirect('/user/login')
@@ -69,27 +72,146 @@ def userRegister(request):
 
         return render(request, "register.html", context)
 
+@login_required(login_url='/login')  # Check login
 def userAccount(request):
     return render(request, "useraccount.html")
 
 
 @login_required(login_url='/login')  # Check login
 def userCart(request):
+    url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
+    totalPrice=0
+    dsc = 0
     current_user = request.user
 
+    user_coupon = UserCoupon.objects.filter(user_id = current_user.id)
     cart = ShopCart.objects.filter(user_id = current_user.id)
 
-    totalPrice=0
+    # Resets UserCoupon.used section
+    for coupons in user_coupon:
+        coupons.used = False
+    coupons.save()
 
     for product in cart:
-
         totalPrice = totalPrice + product.amount
 
     context = {
         "cart" : cart,
-        "totalPrice":totalPrice,
+        "totalPrice" : totalPrice,
+        "discount" : dsc,
     }
 
-    return render(request, "cart.html", context)
+
+    if request.method == "POST":
+        user_coupon_code = request.POST['coupon_code'].upper()
+        coupon_check = Coupon.objects.get(code = user_coupon_code)
+
+        if coupon_check:
+            user_coupon_check = UserCoupon.objects.get(coupon_id = coupon_check.id, user_id=current_user.id)
+            dsc = user_coupon_check.coupon.discount
+            if dsc < 1:
+                totalPrice = totalPrice - (totalPrice * dsc)
+            else:
+                totalPrice = totalPrice - dsc
+
+            user_coupon_check.used = True
+            user_coupon_check.save()
+
+            context = {
+                "cart" : cart,
+                "totalPrice" : totalPrice,
+                "discount" : dsc,
+                "coupon" : coupon_check
+            }
+            
+            messages.warning(request, "Coupon is successfully added..")
+            return render(request, "cart.html", context)   
+            
+        else:
+            messages.warning(request, "Coupon is not valid...")
+            return HttpResponseRedirect(url)
+
+    else:
+
+        return render(request, "cart.html", context)
+
+
+@login_required(login_url='/login')  # Check login
+def userProfileUpdate(request):
+    url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
+    current_user = request.user
+
+    if request.method == "POST":
+        user_update_form = UserProfileForm(request.POST, instance=current_user.userprofile)
+
+        if user_update_form.is_valid():
+            user_update_form.save()    
+            messages.success(request,"Profile updated!")
+            return HttpResponseRedirect(url)    
+        else:
+            messages.warning(request,"Profile could not updated! Please try again")
+            return HttpResponseRedirect(url)    
+            
+
+    else:
+        form = UserProfileForm(instance=current_user.userprofile)
+    
+        context = {
+            "form":form
+        }
+    
+        return render(request, "userprofile.html", context)
+
+
+@login_required(login_url='/login')  # Check login
+def userUpdate(request):
+    url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
+    current_user = request.user
+
+    if request.method == "POST":
+        user_update_form = UserUpdateForm(request.POST, instance=current_user)
+
+        if user_update_form.is_valid():
+            user_update_form.save()    
+            messages.success(request,"User updated!")
+            return HttpResponseRedirect(url)    
+        else:
+            messages.warning(request,"User could not updated! Please try again")
+            return HttpResponseRedirect(url)    
+            
+
+    else:
+        form = UserUpdateForm(instance=current_user)
+    
+        context = {
+            "form":form
+        }
+    
+        return render(request, "useraccountupdate.html", context)
+
+
+@login_required(login_url='/login')  # Check login
+def changeUserPassword(request):
+    url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
+
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request,"Şifre başarıyla güncellendi!")
+            return HttpResponseRedirect(url)
+        else:
+            messages.warning(request, "Hata oluştu. Bir daha deneyin")
+            return HttpResponseRedirect(url)
+    else:
+
+        form = PasswordChangeForm(request.user)
+        
+        context= {
+            "form":form,
+        }
+
+        return render(request, "userpasswordupdate.html", context)
 
 
