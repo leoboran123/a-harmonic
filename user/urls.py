@@ -15,6 +15,9 @@ urlpatterns = [
     path('myprofile/', views.userProfileUpdate, name="userProfile"),
     path('userupdate/', views.userUpdate, name="updateUser"),
     path('myorders/', views.userOrders, name="userOrders"),
+    path('orderproducts/', views.userOrderProducts, name="userOrderProducts"),
+    path('mycoupons/', views.userCoupons, name="userCoupons"),
+
     path('changepassword/', views.changeUserPassword, name="changePassword"),
 
 

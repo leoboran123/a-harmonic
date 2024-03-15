@@ -1,0 +1,67 @@
+{% extends "homebase.html" %}
+{% load static %}
+
+{% block title %}Ürünler{% endblock title%}
+{% block keywords %}keywords{% endblock keywords%}
+{% block description %}Burası ürünler sayfası...{% endblock description%}
+
+
+{% block body %}
+<style>
+    body{
+        margin-top: 150px;
+    }
+</style>
+
+
+ <div class="container-fluid fruite py-5">
+    <div class="container py-5">
+            <h1 class="mb-4">My Orders</h1>
+            <div class="row g-4">
+            
+                <div class="col-lg-4">    
+                    {% include "_useraccountnavbar.html" %}
+                    
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="row g-4">
+                        
+                        <h1>My Coupons</h1>
+                        <div class="col-lg-12">
+                            {% if coupon != Null %}
+                                <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Coupon Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for coupon in user_coupons %}
+                                        <tr>
+                                            <td>{{ coupon }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                </tbody>
+                            {% else %}
+                                <div>
+                                    <p>You don't have any coupon yet...</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-lg-12">
+                            <table class="table">
+                                
+                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+    </div>
+</div>
+<!-- Fruits Shop End-->
+{% endblock body %}

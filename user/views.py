@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from order.models import ShopCart
 from product.models import Product
-from order.models import Coupon, UserCoupon
+from order.models import Coupon, UserCoupon, Order, OrderProduct
 from .forms import UserProfileForm, UserUpdateForm
 from .models import UserProfile
 
@@ -231,9 +231,48 @@ def changeUserPassword(request):
         return render(request, "userpasswordupdate.html", context)
 
 
+@login_required(login_url='/login')  # Check login
 def userOrders(request):
     current_user = request.user
+    user_orders = Order.objects.filter(user_id=current_user.id)
+
+    
+
+    context ={
+        "user_orders": user_orders,
+    }
+
+    return render(request, "userorders.html", context)
 
 
+@login_required(login_url='/login')  # Check login
+def userOrderProducts(request):
+    current_user = request.user
+    user_orders = Order.objects.filter(user_id=current_user.id)
 
-    return render(request, "userorders.html")
+    order_products = []
+    for order in user_orders:
+        product = OrderProduct.objects.filter(order_id = order.id)
+        for i in product:
+            order_products.append(i)
+        
+
+    context ={
+        "user_orders": user_orders,
+        "order_products": order_products
+    }
+
+    return render(request, "userorderproducts.html", context)
+
+@login_required(login_url='/login')  # Check login
+def userCoupons(request):
+    current_user = request.user
+    
+    user_coupons = UserCoupon.objects.filter(user_id=current_user.id)
+
+    context={
+        "user_coupons":user_coupons
+    }
+
+    return render(request, "usercoupons.html", context)
+
