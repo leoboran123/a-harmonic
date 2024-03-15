@@ -18,11 +18,11 @@ urlpatterns = [
     path('orderproducts/', views.userOrderProducts, name="userOrderProducts"),
     path('mycoupons/', views.userCoupons, name="userCoupons"),
 
+    path('mycart/', views.userCart, name="userCart"),
     path('changepassword/', views.changeUserPassword, name="changePassword"),
 
 
 
-    path('mycart/', views.userCart, name="userCart"),
 
 
 

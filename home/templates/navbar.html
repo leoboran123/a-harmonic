@@ -43,12 +43,12 @@
                                 {% endrecursetree %}
                             </div>
                         </div>
-                    <a href="" class="nav-item nav-link">Shop Detail</a>
+                    <a href="{% url "userOrders" %}" class="nav-item nav-link">Shop Detail</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                            <a href="cart.html" class="dropdown-item">Cart</a>
-                            <a href="chackout.html" class="dropdown-item">Chackout</a>
+                            <a href="{% url "userCart" %}" class="dropdown-item">Cart</a>
+                            <a href="{% url "userCheckout" %}" class="dropdown-item">Checkout</a>
                         </div>
                     </div>
                     <a href="{% url "testimonal" %}" class="nav-item nav-link">Testimonial</a>

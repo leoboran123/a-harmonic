@@ -88,11 +88,16 @@ def checkout(request):
     user_form = OrderForm(instance=current_user)
     user_cart = ShopCart.objects.filter(user_id=current_user.id)
     
+    if not(user_cart):
+        messages.warning(request, "You don't have anything in your cart...")
+        return render(request, "index.html")
+
+
     for prices in user_cart:
         totalPrice = totalPrice + prices.amount
 
-    user_coupons = UserCoupon.objects.get(user_id=current_user.id, used=True)
-    if user_coupons:
+    try:
+        user_coupons = UserCoupon.objects.get(user_id=current_user.id, used=True)
 
         if user_coupons.coupon.discount < 1:
             totalPrice = totalPrice - (totalPrice * user_coupons.coupon.discount)
@@ -107,7 +112,7 @@ def checkout(request):
 
         }
 
-    else:
+    except:
         context = {
             "cart":user_cart,
             "totalPrice":totalPrice,
@@ -115,6 +120,7 @@ def checkout(request):
 
 
         }
+
     if request.method=="POST":
         form = OrderForm(request.POST)
         # return HttpResponse(request.POST.items())
