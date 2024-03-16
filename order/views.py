@@ -23,7 +23,7 @@ def addProductToCart(request, id):
     
         check_shopcart.quantity = check_shopcart.quantity + 1
         check_shopcart.save()
-        messages.success(request, "Sepete bir kez daha eklendi!")
+        messages.success(request, "Aynı ürün sepete bir kez daha eklendi!")
         return HttpResponseRedirect(url)
 
     except:

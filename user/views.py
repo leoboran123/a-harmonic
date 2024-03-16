@@ -6,7 +6,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 
 from order.models import ShopCart
-from product.models import Product
+from product.models import Product, Comment
 from order.models import Coupon, UserCoupon, Order, OrderProduct
 from .forms import UserProfileForm, UserUpdateForm
 from .models import UserProfile
@@ -72,12 +72,12 @@ def userRegister(request):
 
         return render(request, "register.html", context)
 
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
 def userAccount(request):
     return render(request, "useraccount.html")
 
 
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
 def userCart(request):
     url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
     totalPrice=0
@@ -152,7 +152,7 @@ def userCart(request):
         return render(request, "cart.html", context)
 
 
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
 def userProfileUpdate(request):
     url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
     current_user = request.user
@@ -178,8 +178,7 @@ def userProfileUpdate(request):
     
         return render(request, "userprofile.html", context)
 
-
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
 def userUpdate(request):
     url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
     current_user = request.user
@@ -206,7 +205,7 @@ def userUpdate(request):
         return render(request, "useraccountupdate.html", context)
 
 
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
 def changeUserPassword(request):
     url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
 
@@ -231,7 +230,8 @@ def changeUserPassword(request):
         return render(request, "userpasswordupdate.html", context)
 
 
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
+  # Check login
 def userOrders(request):
     current_user = request.user
     user_orders = Order.objects.filter(user_id=current_user.id)
@@ -264,7 +264,7 @@ def userOrderProducts(request):
 
     return render(request, "userorderproducts.html", context)
 
-@login_required(login_url='/login')  # Check login
+@login_required(login_url='/user/login')  # Check login
 def userCoupons(request):
     current_user = request.user
     
@@ -275,4 +275,19 @@ def userCoupons(request):
     }
 
     return render(request, "usercoupons.html", context)
+
+
+@login_required(login_url='/user/login')  # Check login
+def userComments(request):
+    current_user = request.user
+
+    user_comments = Comment.objects.filter(user_id=current_user.id)
+
+    context = {
+        "user_comments" : user_comments,
+    }
+
+    return render(request, "usercomments.html", context)
+
+
 

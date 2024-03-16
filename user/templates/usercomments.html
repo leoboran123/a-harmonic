@@ -27,31 +27,44 @@
                 <div class="col-lg-7">
                     <div class="row g-4">
                         
-                        <h1>My Coupons</h1>
+                        <h1>My Comments</h1>
                         <div class="col-lg-12">
-                            {% if not coupon %}
+                            {% if user_comments %}
                                 <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Coupon Code</th>
-                                        <th scope="col"></th>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Subject</th>
+                                        <th scope="col">Comment</th>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Rate</th>
+                                        <th scope="col">Delete Comment</th>
+
+
+
 
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for coupon in user_coupons %}
+                                    {% for comment in user_comments %}
                                         <tr>
-                                            <td>{{ coupon }}</td>
-                                            <td>
+                                            <td>{{ comment.id }}</td>
+                                            <td>{{ comment.subject }}</td>
 
-                                                <a href="{% url "categoryProducts" coupon.coupon.category_id %}">Use It Now!</a>
-                                            </td>
+                                            <td>{{ comment.comment }}</td>
+                                            <td>{{ comment.product.title }}</td>
+                                            <td>{{ comment.rate }}</td>
+                                            <td><a href="{% url "deleteComment" comment.id %}">Delete Comment</a></td>
+
+
+
+                                            
                                         </tr>
                                         {% endfor %}
                                 </tbody>
                             {% else %}
                                 <div>
-                                    <p>You don't have any coupon yet...</p>
+                                    <p>You don't have any comments yet...</p>
                                 </div>
                             {% endif %}
                         </div>

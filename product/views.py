@@ -1,5 +1,10 @@
 from django.shortcuts import render,HttpResponse, HttpResponseRedirect
-from .models import Category, Product, Images
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+
+from .models import Category, Comment, Product, Images
+from .forms import CommentForm
 
 # Create your views here.
 
@@ -23,10 +28,13 @@ def product_search(request):
 def productDetail(request, slug):
     products = Product.objects.get(slug=slug)
     images = Images.objects.filter(product_id=products.id)
+    product_comments = Comment.objects.filter(product_id=products.id)
 
     context = {
         "product":products,
         "productGallery":images,
+        "product_comments":product_comments,
+        
 
     }
 
@@ -52,4 +60,40 @@ def categoryProduct(request, id):
 
     return render(request, "products_page.html", context)
 
+@login_required(login_url='/user/login')  # Check login
+def addComment(request, id):
+    url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
+    current_user = request.user
+    
+    if not current_user:
+        messages.success(request, "You have to login to post comments")
+        return HttpResponseRedirect(url)
+    else:
+        if request.method == 'POST':
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                data = Comment()
+                data.subject = form.cleaned_data['subject']
+                data.comment = form.cleaned_data['comment']
+                data.rate = form.cleaned_data['rate']
+                data.ip = request.META.get('REMOTE_ADDR')
+                data.user_id = current_user.id
+                data.product_id = id
+                data.save()
+                messages.success(request, "yorumunuz başarıyla kaydedildi")
+                return HttpResponseRedirect(url)
+        return HttpResponseRedirect(url)
+
+@login_required(login_url='/user/login')  # Check login
+def deleteComment(request, id):
+    current_user = request.user
+    url = request.META.get('HTTP_REFERER') # geldiğimiz sayfanın url bilgisini verir
+
+
+    user_comment = Comment.objects.get(user_id=current_user.id, id=id)
+
+    user_comment.delete()
+
+    messages.success(request, "Comment successfully deleted...")
+    return HttpResponseRedirect(url)
 

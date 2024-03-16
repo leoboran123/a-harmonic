@@ -20,6 +20,9 @@ from . import views
 urlpatterns = [
 
     path('category/<int:id>', views.categoryProduct, name="categoryProducts"),
+    path('addcomment/<int:id>', views.addComment, name="addComment"),
+    path('deletecomment/<int:id>', views.deleteComment, name="deleteComment"),
+
     
     path('detail/<slug:slug>', views.productDetail, name="productDetail"),
 
