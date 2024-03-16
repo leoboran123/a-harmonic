@@ -4,26 +4,36 @@ from django.contrib import messages
 from product.models import Category
 from .forms import ContactForm
 from .models import ContactFormMessage
+from product.models import Product, Comment
 
 # Create your views here.
 def index(request):
     categories = Category.objects.all()
+    products = Product.objects.all().order_by('rewievcount')[:6]
+    comments = Comment.objects.filter(rate__gt=3).order_by('-create_at')[:6]
 
     context = {
         "categories":categories,
+        "products":products,
+        "comments":comments,
     }
 
     return render(request, 'index.html', context)
 
 
 def testimonal(request):
-    return render(request, 'testimonal.html')
-    
+    comments = Comment.objects.filter(rate__gt=3).order_by('-create_at')[:6]
 
+    context = {
+            "comments":comments,
+        }
+
+
+    return render(request, 'testimonal.html', context)
+    
 
 def aboutus(request):
     return render(request, 'aboutus.html')
-
 
 
 def contact(request):
